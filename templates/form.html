@@ -3,127 +3,115 @@
 <head>
     <title>Generate Purchase Order</title>
     <style>
-        .po-input-wrapper {
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        input, select, textarea {
+            margin-bottom: 12px;
+            width: 100%;
+            padding: 8px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .row {
             display: flex;
-            align-items: center;
+            gap: 20px;
         }
-        .po-prefix {
-            padding: 6px 8px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-right: none;
-            font-family: monospace;
+        .col {
+            flex: 1;
         }
-        .po-suffix {
-            width: 80px;
-            padding: 6px;
-            border: 1px solid #ccc;
-            font-family: monospace;
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
+    <script>
+        function autofillSupplier() {
+            const selected = document.getElementById("supplier_select").value;
+            if (selected === "Mahalakshmi Marketing") {
+                document.getElementById("supplier_company").value = "MAHALAKSHMI MARKETING";
+                document.getElementById("supplier_address1").value = "New Steel City, Plot No-100";
+                document.getElementById("supplier_address2").value = "Doolapally, Kompally, Medchal Malkajigiri";
+                document.getElementById("supplier_city").value = "Hyderabad";
+                document.getElementById("supplier_state").value = "Telangana";
+                document.getElementById("supplier_gstin").value = "36EXPPP0332E1ZG";
+            }
+        }
+    </script>
 </head>
 <body>
-    <h2>Purchase Order Form</h2>
-    <form method="post">
+<h1>Purchase Order Generator</h1>
+<form action="/generate-po" method="post">
+    <label>PO Number</label>
+    <div class="row">
+        <div class="col"><input type="text" value="EP/2025-26/" disabled></div>
+        <div class="col"><input type="text" name="po_number" required></div>
+    </div>
 
-        <label>PO Number:</label><br/>
-        <div class="po-input-wrapper">
-            <span class="po-prefix">EP/2025-26/</span>
-            <input type="text" class="po-suffix" name="po_number_suffix" pattern="\d{3}" title="Enter last 3 digits" required>
-        </div>
-        <br/><br/>
+    <label>Supplier</label>
+    <select id="supplier_select" onchange="autofillSupplier()">
+        <option value="">-- Select Supplier --</option>
+        <option value="Mahalakshmi Marketing">Mahalakshmi Marketing</option>
+    </select>
 
-        <h3>Supplier Details</h3>
+    <input type="text" name="supplier_company" id="supplier_company" placeholder="Company Name" required>
+    <input type="text" name="supplier_address1" id="supplier_address1" placeholder="Address Line 1" required>
+    <input type="text" name="supplier_address2" id="supplier_address2" placeholder="Address Line 2">
+    <input type="text" name="supplier_city" id="supplier_city" placeholder="City" required>
+    <input type="text" name="supplier_state" id="supplier_state" placeholder="State" required>
+    <input type="text" name="supplier_gstin" id="supplier_gstin" placeholder="GSTIN Number" required>
 
-        <label>Choose Supplier:</label><br/>
-        <select id="supplier_selector" onchange="fillSupplier()" required>
-            <option value="">-- Select Supplier --</option>
-            <option value="mahalakshmi">MAHALAKSHMI MARKETING</option>
-        </select><br/><br/>
+    <label>Type of Purchase</label>
+    <select name="purchase_type" required>
+        <option value="Inter State">Inter State</option>
+        <option value="Inter City">Inter City</option>
+    </select>
 
-        <label>Company Name:</label><br/>
-        <input type="text" id="supplier_name" name="supplier_name" required><br/><br/>
+    <label>Delivery Schedule</label>
+    <select name="delivery_schedule" required>
+        <option value="Immediate">Immediate</option>
+        <option value="Within One week">Within One week</option>
+        <option value="Within One month">Within One month</option>
+    </select>
 
-        <label>Address Line 1:</label><br/>
-        <input type="text" id="supplier_address1" name="supplier_address1" required><br/><br/>
+    <label>Transport</label>
+    <select name="transport" required>
+        <option value="By Road">By Road</option>
+        <option value="By Air">By Air</option>
+    </select>
 
-        <label>Address Line 2:</label><br/>
-        <input type="text" id="supplier_address2" name="supplier_address2"><br/><br/>
+    <label>Payment Terms</label>
+    <select name="payment_terms" required>
+        <option value="Against Approval">Against Approval</option>
+    </select>
 
-        <label>City:</label><br/>
-        <input type="text" id="supplier_city" name="supplier_city" required><br/><br/>
+    <h3>Product Details</h3>
+    <input type="text" name="product_name" placeholder="Product Name" required>
+    <input type="text" name="cas_number" placeholder="CAS Number">
+    <input type="text" name="hsn_code" placeholder="HSN Code" required>
+    <select name="unit" required>
+        <option value="Kgs">Kgs</option>
+        <option value="Tonnes">Tonnes</option>
+    </select>
+    <input type="number" name="quantity" placeholder="Quantity" required>
+    <input type="number" step="0.01" name="rate" placeholder="Rate" required>
 
-        <label>State:</label><br/>
-        <input type="text" id="supplier_state" name="supplier_state" required><br/><br/>
+    <input type="number" step="0.01" name="basic_amount" placeholder="Basic Amount" required>
+    <input type="number" step="0.01" name="sgst" placeholder="SGST (9%)" required>
+    <input type="number" step="0.01" name="cgst" placeholder="CGST (9%)" required>
+    <input type="number" step="0.01" name="igst" placeholder="IGST (if any)">
+    <input type="number" step="0.01" name="tax_total" placeholder="Tax Total" required>
+    <input type="number" step="0.01" name="grand_total" placeholder="Grand Total" required>
 
-        <label>GSTIN Number:</label><br/>
-        <input type="text" id="supplier_gstin" name="supplier_gstin" required><br/><br/>
-
-        <label>Type of Purchase:</label><br/>
-        <select name="purchase_type" required>
-            <option value="Inter State">Inter State</option>
-            <option value="Inter City">Inter City</option>
-        </select><br/><br/>
-
-        <label>Delivery Schedule:</label><br/>
-        <select name="delivery_schedule" required>
-            <option value="Immediate">Immediate</option>
-            <option value="Within One Week">Within One Week</option>
-            <option value="Within One Month">Within One Month</option>
-        </select><br/><br/>
-
-        <label>Transport:</label><br/>
-        <select name="transport" required>
-            <option value="By Road">By Road</option>
-            <option value="By Air">By Air</option>
-        </select><br/><br/>
-
-        <label>Payment Terms:</label><br/>
-        <select name="payment_terms" required>
-            <option value="Against Approval">Against Approval</option>
-        </select><br/><br/>
-
-        <h3>Product Details</h3>
-
-        <label>Product Name:</label><br/>
-        <input type="text" name="product_name" required><br/><br/>
-
-        <label>CAS Number:</label><br/>
-        <input type="text" name="cas_number"><br/><br/>
-
-        <label>HSN Code:</label><br/>
-        <input type="text" name="hsn_code" required><br/><br/>
-
-       <label>Unit:</label><br/>
-<select name="unit" required>
-    <option value="KGS">KGS</option>
-    <option value="TONNES">TONNES</option>
-</select><br/><br/>
-
-
-        <label>Quantity:</label><br/>
-        <input type="number" name="quantity" required><br/><br/>
-
-        <label>Rate per Unit (INR):</label><br/>
-        <input type="number" name="rate_per_unit" required><br/><br/>
-
-
-        <input type="submit" value="Generate PDF">
-    </form>
-    <script>
-function fillSupplier() {
-    const selected = document.getElementById("supplier_selector").value;
-
-    if (selected === "mahalakshmi") {
-        document.getElementById("supplier_name").value = "MAHALAKSHMI MARKETING";
-        document.getElementById("supplier_address1").value = "New Steel City, Plot No-100";
-        document.getElementById("supplier_address2").value = "Doolapally, Kompally, Medchal Malkajigiri";
-        document.getElementById("supplier_city").value = "Hyderabad";
-        document.getElementById("supplier_state").value = "Telangana";
-        document.getElementById("supplier_gstin").value = "36EXPPP0332E1ZG";
-    }
-}
-</script>
-
+    <button type="submit">Generate PDF</button>
+</form>
 </body>
 </html>
